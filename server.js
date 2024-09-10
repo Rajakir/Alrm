@@ -9,6 +9,23 @@ const razorpay = new Razorpay({
     key_id: 'rzp_live_1s0etn5Ap6APqS',         // Your Razorpay live key ID
     key_secret: 'INCztFyfHbpaadUF44rHqeWG'  // Your Razorpay live key secret
 });
+app.post('/send-payment-request', async (req, res) => {
+    console.log('Received payment request:', req.body); // Log incoming request data
+    const { upiId, amount, note } = req.body;
+
+    try {
+        const paymentResponse = await sendUPIPaymentRequest(upiId, amount, note);
+        
+        if (paymentResponse.success) {
+            res.json({ success: true, message: 'Payment request sent.' });
+        } else {
+            res.json({ success: false, message: 'Failed to send payment request.' });
+        }
+    } catch (error) {
+        console.error('Payment Request Error:', error);
+        res.status(500).json({ success: false, message: 'Server error.' });
+    }
+});
 
 // Endpoint to send UPI payment request
 app.post('/send-payment-request', async (req, res) => {
