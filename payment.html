@@ -69,10 +69,13 @@
                 return;
             }
 
+            // Convert total amount to paise
+            const amountInPaise = Math.round(totalAmount * 100);
+
             // Prepare payment data
             const paymentData = {
                 upiId: upiId,
-                amount: totalAmount.toFixed(2),
+                amount: amountInPaise,
                 note: itemNames
             };
 
