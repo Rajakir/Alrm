@@ -1,19 +1,22 @@
-// server.js
 const express = require('express');
 const bodyParser = require('body-parser');
+const Razorpay = require('razorpay');
 const app = express();
 app.use(bodyParser.json());
 
-// Mock endpoint for sending UPI payment request
+// Configure Razorpay with live key
+const razorpay = new Razorpay({
+    key_id: 'rzp_live_1s0etn5Ap6APqS',         // Your Razorpay live key ID
+    key_secret: 'INCztFyfHbpaadUF44rHqeWG'  // Your Razorpay live key secret
+});
+
+// Endpoint to send UPI payment request
 app.post('/send-payment-request', async (req, res) => {
     const { upiId, amount, note } = req.body;
 
-    // Here you would call the payment provider API to send the request
-    // Example with Razorpay (replace with actual API call)
     try {
-        // Simulating an API call to send payment request
         const paymentResponse = await sendUPIPaymentRequest(upiId, amount, note);
-
+        
         if (paymentResponse.success) {
             res.json({ success: true, message: 'Payment request sent.' });
         } else {
@@ -25,10 +28,27 @@ app.post('/send-payment-request', async (req, res) => {
     }
 });
 
-// Mock function simulating an API call to send UPI payment request
+// Function to simulate sending a UPI payment request
 async function sendUPIPaymentRequest(upiId, amount, note) {
-    // In a real implementation, this would be an API call to the payment provider
-    return { success: true };  // Simulating a successful request
+    try {
+        const paymentOptions = {
+            amount: amount * 100, // Amount in paise (1 INR = 100 paise)
+            currency: 'INR',
+            receipt: 'receipt#1', // Optional
+            notes: {
+                note: note
+            }
+        };
+        
+        // Create a payment order (Replace with actual request if required)
+        const order = await razorpay.orders.create(paymentOptions);
+
+        // Simulating successful payment request response
+        return { success: true, order };
+    } catch (error) {
+        console.error('Error creating order:', error);
+        return { success: false };
+    }
 }
 
 app.listen(3000, () => {
