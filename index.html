@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - E-commerce Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>E-commerce Website</h1>
+        <nav>
+            <a href="cart.html">Cart (2)</a>
+        </nav>
+    </header>
+    <main class="container">
+      
+        <!-- Product List -->
+        <section class="product-list">
+            <h2>Products</h2>
+            <div class="product">
+                <img src="https://via.placeholder.com/150" alt="Product 1">
+                <h3>Product 1</h3>
+                <p>$10.00</p>
+                <button onclick="addToCart(1)">Add to Cart</button>
+            </div>
+               <div class="product">
+                <img src="https://via.placeholder.com/150" alt="Product 1">
+                <h3>Product 1</h3>
+                <p>$87.00</p>
+                <button onclick="addToCart(1)">Add to Cart</button>
+            </div>
+   <div class="product">
+                <img src="https://via.placeholder.com/150" alt="Product 1">
+                <h3>Product 1</h3>
+                <p>$60.00</p>
+                <button onclick="addToCart(1)">Add to Cart</button>
+            </div>
+            <!-- Repeat for more products as needed -->
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

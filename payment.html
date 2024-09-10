@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - E-commerce Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        Payment Page
+    </header>
+    <main class="payment-container">
+        <h1>Review and Pay</h1>
+
+        <div class="summary">
+            <h2>Order Summary</h2>
+            <p id="total-amount">Total Amount: $0.00</p>
+        </div>
+
+        <div class="address-details">
+            <h2>Shipping Address</h2>
+            <p id="address-info"></p>
+        </div>
+
+        <div class="payment-method">
+            <h2>Pay with UPI</h2>
+            <label for="upi-id">Enter UPI ID:</label>
+            <input type="text" id="upi-id" placeholder="example@bank" required>
+            <a id="upi-link" href="#" class="pay-button">Pay Now</a>
+        </div>
+
+        <!-- Razorpay Payment Button -->
+        <form>
+            <script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_Ov8fC50dy7JnSJ" async></script>
+        </form>
+
+        <!-- Success Message -->
+        <div id="success-message" class="success-message" style="display: none;">
+            Payment Successful! Thank you for your purchase.
+        </div>
+    </main>
+    <script>
+        // Retrieve cart data and calculate total amount
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const totalAmount = cart.reduce((total, item) => total + item.price, 0);
+        document.getElementById('total-amount').innerText = `Total Amount: $${totalAmount.toFixed(2)}`;
+
+        // Retrieve item names for UPI payment note
+        const itemNames = cart.map(item => item.name).join(", ");
+        const encodedItemNames = encodeURIComponent(itemNames);
+
+        // Retrieve address data from localStorage
+        const address = JSON.parse(localStorage.getItem('address'));
+        if (address) {
+            document.getElementById('address-info').innerText = `
+                ${address.name}, 
+                ${address.address}, 
+                ${address.city}, 
+                ${address.state} - ${address.zipcode}
+            `;
+        }
+
+        // Handle payment click
+        document.getElementById('upi-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            // Get UPI ID from input field
+            const upiId = document.getElementById('upi-id').value.trim();
+
+            // Check if UPI ID is entered
+            if (!upiId) {
+                alert('Please enter a valid UPI ID.');
+                return;
+            }
+
+            // Create UPI Payment Link
+            const upiLink = `upi://pay?pa=${upiId}&pn=E-commerce&am=${totalAmount.toFixed(2)}&cu=INR&tn=${encodedItemNames}`;
+            
+            // Attempt to open UPI app with the payment link
+            window.location.href = upiLink;
+
+            // Show success message after redirect (or simulate)
+            const successMessage = document.getElementById('success-message');
+            successMessage.style.display = 'block';
+
+            // Hide success message after 20 seconds
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 20000);
+        });
+    </script>
+</body>
+</html>
