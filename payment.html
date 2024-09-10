@@ -26,8 +26,8 @@
         <div class="payment-method">
             <h2>Pay with UPI</h2>
             <label for="upi-id">Enter Your UPI ID:</label>
-            <input type="text" id="upi-id" placeholder="example@bank" required>
-            <button id="pay-now" class="pay-button">Pay Now</button>
+            <input type="text" id="upi-id" placeholder="Enter your UPI ID (e.g., yourname@bank)" required>
+            <button id="pay-now" class="pay-button">Send Payment Request</button>
         </div>
 
         <!-- Success Message -->
@@ -35,6 +35,7 @@
             Payment request sent successfully! Please complete the payment in your UPI app.
         </div>
     </main>
+
     <script>
         // Retrieve cart data and calculate total amount
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -43,8 +44,7 @@
 
         // Retrieve item names for UPI payment note
         const itemNames = cart.map(item => item.name).join(", ");
-        const encodedItemNames = encodeURIComponent(itemNames);
-
+        
         // Retrieve address data from localStorage
         const address = JSON.parse(localStorage.getItem('address'));
         if (address) {
@@ -57,10 +57,10 @@
         }
 
         // Handle payment click
-        document.getElementById('pay-now').addEventListener('click', function(event) {
+        document.getElementById('pay-now').addEventListener('click', async function(event) {
             event.preventDefault();
 
-            // Get the UPI ID entered by the user
+            // Get UPI ID from the input field
             const upiId = document.getElementById('upi-id').value.trim();
 
             // Validate UPI ID input
@@ -69,20 +69,41 @@
                 return;
             }
 
-            // Create UPI Payment Link with entered UPI ID
-            const upiLink = `upi://pay?pa=${upiId}&pn=E-commerce&am=${totalAmount.toFixed(2)}&cu=INR&tn=${encodedItemNames}`;
+            // Prepare payment data
+            const paymentData = {
+                upiId: upiId,
+                amount: totalAmount.toFixed(2),
+                note: itemNames
+            };
 
-            // Attempt to open UPI app with the payment link
-            window.location.href = upiLink;
+            try {
+                // Send payment request to the backend
+                const response = await fetch('/send-payment-request', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(paymentData)
+                });
 
-            // Show success message after attempting to open the UPI app
-            const successMessage = document.getElementById('success-message');
-            successMessage.style.display = 'block';
+                const result = await response.json();
 
-            // Hide success message after 20 seconds
-            setTimeout(function() {
-                successMessage.style.display = 'none';
-            }, 20000);
+                if (result.success) {
+                    // Show success message
+                    const successMessage = document.getElementById('success-message');
+                    successMessage.style.display = 'block';
+
+                    // Hide success message after 20 seconds
+                    setTimeout(function() {
+                        successMessage.style.display = 'none';
+                    }, 20000);
+                } else {
+                    alert('Failed to send payment request. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
         });
     </script>
 </body>
