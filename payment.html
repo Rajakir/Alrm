@@ -25,19 +25,14 @@
 
         <div class="payment-method">
             <h2>Pay with UPI</h2>
-            <label for="upi-id">Enter UPI ID:</label>
+            <label for="upi-id">Enter Your UPI ID:</label>
             <input type="text" id="upi-id" placeholder="example@bank" required>
-            <a id="upi-link" href="#" class="pay-button">Pay Now</a>
+            <button id="pay-now" class="pay-button">Pay Now</button>
         </div>
-
-        <!-- Razorpay Payment Button -->
-        <form>
-            <script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_Ov8fC50dy7JnSJ" async></script>
-        </form>
 
         <!-- Success Message -->
         <div id="success-message" class="success-message" style="display: none;">
-            Payment Successful! Thank you for your purchase.
+            Payment request sent successfully! Please complete the payment in your UPI app.
         </div>
     </main>
     <script>
@@ -62,25 +57,25 @@
         }
 
         // Handle payment click
-        document.getElementById('upi-link').addEventListener('click', function(event) {
+        document.getElementById('pay-now').addEventListener('click', function(event) {
             event.preventDefault();
-            
-            // Get UPI ID from input field
+
+            // Get the UPI ID entered by the user
             const upiId = document.getElementById('upi-id').value.trim();
 
-            // Check if UPI ID is entered
+            // Validate UPI ID input
             if (!upiId) {
                 alert('Please enter a valid UPI ID.');
                 return;
             }
 
-            // Create UPI Payment Link
+            // Create UPI Payment Link with entered UPI ID
             const upiLink = `upi://pay?pa=${upiId}&pn=E-commerce&am=${totalAmount.toFixed(2)}&cu=INR&tn=${encodedItemNames}`;
-            
+
             // Attempt to open UPI app with the payment link
             window.location.href = upiLink;
 
-            // Show success message after redirect (or simulate)
+            // Show success message after attempting to open the UPI app
             const successMessage = document.getElementById('success-message');
             successMessage.style.display = 'block';
 
